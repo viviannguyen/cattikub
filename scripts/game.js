@@ -53,9 +53,21 @@ Game.prototype.resetBoard = function() {
 };
 
 Game.prototype.changeTurns = function() {
-  nextIndex = this.players.indexOf(this.currPlayer) + 1;
-  this.currPlayer = this.players[nextIndex];
+  if (this.checkWin(this.currPlayer)) {
+    this.endGame(this.currPlayer);
+  } else {
+    nextIndex = this.players.indexOf(this.currPlayer) + 1;
+    this.currPlayer = this.players[nextIndex];
+  }
 };
+
+Game.prototype.endGame = function() {
+  // end the game?!!
+}
+
+Game.prototype.checkWin = function(player) {
+  return player.hand.length == 0:
+}
 
 Game.prototype.drawTile = function(player) {
   rand_index = Math.floor(Math.random() * this.pool.length);
