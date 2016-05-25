@@ -113,10 +113,110 @@ var Set = function(tiles) {
   // 3+ tiles
   // run set: run of the same color
   // group set: group of same number, but different colors
+  this.tiles = tiles;
+  this.colorCount = {
+    "red": 0,
+    "blue": 0,
+    "orange": 0,
+    "black": 0
+  };
+  this.numCount = {};
+  for(var i = 0; i < 14; i++){
+    this.numCount[i] = 0;
+  }
+  for(var i = 0; i < this.tiles.length; i++){
+    this.numCount[this.tiles[i].number] += 1;
+    this.colorCount[this.tiles[i].color] += 1;
+  }
 };
 
+// Check that a set is valid. Use counters of colors and numbers to ensure
+// uniqueness of colors and numbers. For runs, iterate through all numbers
+// and check for gaps in the sequence, and whether or not a joker is used.
+// Arguments: None.
+// Returns: a boolean.
 Set.prototype.checkValidity = function() {
+  if(this.tiles.length < 3){
+    return false
+  }
+  // Get which numbers and colors are represented once or not at all.
+  var colorRes = onesAndZeros(this.colorCount);
+  var numRes = onesAndZeros(this.numCount);
+
+  if(colorRes[1] + colorRes[0] == 4){
+    if(numRes[0] === 13 || (numRes[0] === 12 && this.numCount[0] > 0)){
+      return true;
+    }
+  } else if (colorRes[0] == 3){
+    if (numRes[1]+numRes[0] < 14){
+      return false
+    }
+    var jokerUsed = false;
+    var runStarted = false;
+    var runEnded = false;
+    for(var i=1; i < 14; i++){
+      if(this.numCount[i] === 1 && !runStarted){
+        runStarted = true;
+      //We've encountered a gap in the runuence, check if there's a joker used.
+      }else if(this.numCount[i] === 0 && runStarted){
+        if(this.numCount[0] === 1 && jokerUsed){
+          runEnded = true;
+        }else{
+          jokerUsed = true;
+        }
+      //If there are any other numbers after a gap, it's invalid.
+      }else if(this.numCount[i] === 1 && runEnded){
+        return false
+      }
+    }
+    if(runStarted){
+      return true;
+    }
+  }
+  return false;
+
 };
+
+// Count the number of times a category is 1 or 0 and return the results.
+// Arguments: An Object that has numbers as values
+// Returns: zeros: the number of items that were zero
+//          ones: the number of items that were one
+function onesAndZeros(counter){
+  var ones = 0;
+  var zeros = 0;
+  Object.keys(counter).forEach(function (key){
+    if (counter[key] === 1){
+      ones += 1;
+    } if(counter[key] === 0){
+      zeros +=1;
+    }
+  });
+  return [zeros, ones];
+}
+
+// Add tile to the tile list and update counters.
+// Arguments: Tile to add.
+// Returns: Nothing.
+Set.prototype.addTile = function(tile){
+  this.tiles.push(tile);
+  this.numCount[tile.number] += 1;
+  this.colorCount[tile.color] += 1;
+}
+
+// Remove tile of matching color and number from tile list and update counters, 
+// Arguments: Tile to remove.
+// Returns: bool of whether the tile was removed or not.
+Set.prototype.removeTile = function(tile){
+  for(var i = 0; i < this.tiles.length; i++){
+    if(tile.color === this.tiles[i].color && tile.number == this.tiles[i].number){
+      this.tiles.splice(i, 1);
+      this.numCount[tile.number] -= 1;
+      this.colorCount[tile.color] -= 1;
+      return true;
+    }
+  }
+  return false;
+}
 
 var Tile = function(color, number) {
   this.color = color;
