@@ -227,5 +227,5 @@ var Tile = function(color, number) {
 }
 
 Tile.MAX_TILE_NO = 13;
-Tile.TILE_COLORS = ["blue", "orange", "red", "yellow"]
+Tile.TILE_COLORS = ["blue", "orange", "red", "black"]
 
