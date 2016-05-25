@@ -10,7 +10,7 @@ Game.prototype.initialize_game = function() {
   all_tiles = []
   for (i = 0; i < Tile.MAX_TILE_NO; i++) {
     for (j = 0; j < Tile.COLORS.length; j++) {
-      all_tiles.push(new Tile(Tile.COLORS[j], i + 1))
+      all_tiles.push(new Tile(Tile.COLORS[j], i + 1));
     }
   }
 
@@ -22,37 +22,66 @@ Game.prototype.initialize_game = function() {
 
   // (2) create players and draws tiles for them
   // FIXME: this is wrong...
-  this.players = [new Player(1), new Player(2)];
+  this.players = [new Player(0), new Player(1)];
   for (i = 0; i < this.players.length; i++) {
     p = this.players[i];
     for (j = 0; j < Game.STARTING_NO_OF_TILES; j++) {
       this.drawTile(p);
     }
   }
+  // save the current state before a turn starts
+  this.savedBoard = this.board;
+  this.currPlayer = this.players[0];
+  this.savedHand = this.currPlayer.hand;
 }
 
-Game.prototype.addToSet = function(tile) {
+Game.prototype.addToSet = function(set, tile) {
+  set.add(tile);
 };
 
-Game.prototype.removeFromSet = function(tile) {
+Game.prototype.removeFromSet = function(set, tile) {
+  set.remove(tile);
 };
 
 Game.prototype.createNewSet = function(tiles) {
+  this.board.push(new Set(tiles));
 };
 
 Game.prototype.resetBoard = function() {
+  this.board = this.savedBoard;
+  this.currPlayer.hand = this.savedHand;
 };
 
 Game.prototype.changeTurns = function() {
+  nextIndex = this.players.indexOf(this.currPlayer) + 1;
+  this.currPlayer = this.players[nextIndex];
 };
 
 Game.prototype.drawTile = function(player) {
-  rand_index = Math.floor(Math.random() * this.pool.length)
+  rand_index = Math.floor(Math.random() * this.pool.length);
   var tile = this.pool[rand_index];
+  tile.owner = player;
   this.pool.splice(index, 1);
-  player.hand.push(tile)
+  player.hand.push(tile);
 };
 
+Game.prototype.skipTurn = function() {
+  this.drawTile(this.currPlayer);
+  this.changeTurns();
+};
+
+Player.prototype.penalty = function() {
+  for (i = 0; i < Game.PENALTY; i++) {
+    this.drawTile(this.currPlayer);
+  }
+  this.changeTurns();
+};
+
+Game.prototype.checkTurn = function(player) {
+  return this.currPlayer == player;
+};
+
+Game.PENALTY = 3
 Game.STARTING_NO_OF_TILES = 14
 
 var Board = function() {
@@ -67,7 +96,7 @@ var Player = function(id) {
   this.hand = [];
   // if init turn, must put down 30+ total
   this.initialTurn = true;
-  this.id = id
+  this.id = id;
 };
 
 Player.prototype.endTurn = function() {
@@ -78,12 +107,6 @@ Player.prototype.endTurn = function() {
     // red shadow around wrong sets
     // yellow shadow around player's tiles
   };
-};
-
-Player.prototype.skipTurn = function() {
-};
-
-Player.prototype.penalty = function() {
 };
 
 var Set = function(tiles) {
