@@ -1,0 +1,58 @@
+.tile{
+    border-style: solid;
+    border-color: PaleGoldenRod;
+    background-color: LightGoldenRodYellow;
+    border-width: 2px;
+    width: 50px;
+    height: 75px;
+    box-sizing: border-box;
+    border-radius: 2px;
+    margin: 3px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+.tile:hover{
+    opacity: .75;
+    cursor: pointer;
+}
+.tileName{
+    -webkit-user-select: inherit;
+    -moz-user-select: none;
+    font-size: 2em;
+    font-family: sans-serif;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 1%;
+    background-color: PaleGoldenRod;
+    border-radius: 100%;
+    width: 40px;
+    height: 40px;
+    margin: 5% auto 0;
+}
+.gameName{
+    -webkit-user-select:inherit;
+    -moz-user-select: none;
+    color: PaleGoldenRod;
+    font-size: .5em;
+    text-align: center;
+    vertical-align: bottom;
+    margin-top: 10px;
+}
+.red{
+    color: red;
+    stroke: red;
+}
+.blue{
+    color: blue;
+    stroke: blue;
+
+}
+.orange{
+    color: orange;
+    stroke: orange;
+
+}
+.black{
+    color: black;
+    stroke: black;
+}
