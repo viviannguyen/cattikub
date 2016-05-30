@@ -56,6 +56,7 @@ Game.prototype.createSet = function(tile) {
 // Return: True.
 Game.prototype.resetBoard = function() {
   this.board = this.savedBoard;
+  this.savedBoard = Board.copy(this.board.sets);
   this.currPlayer.hand = this.savedHand;
   return true;
 };
@@ -175,7 +176,9 @@ var Board = function() {
 // Return: Board object
 Board.copy = function(sets) {
   b = new Board();
-  b.sets = sets;
+  for (var i = 0; i < sets.length; i++){
+    b.sets.push(new gameSet(sets[i].tiles.slice()));
+  }
   return b;
 }
 
