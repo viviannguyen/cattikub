@@ -81,13 +81,17 @@ Game.prototype.endTurn = function() {
 // Arguments: If player skipped or not.
 // Return: removed tile.
 Game.prototype.changeTurns = function(skipped) {
-  if (this.currPlayer.initialTurn && !skipped) {
+  // if the board is changed and hand has the same no tiles, penalty
+  if (this.penaltyCondition()) {
+    this.penalty();
+  } else if (this.currPlayer.initialTurn && !skipped) {
     // take board - saved board = tiles put down, sum left over
     boardTiles = this.savedBoard.flatten();
     newTiles = $(this.board.flatten()).not(boardTiles).get();
-    tots = newTiles.reduce( (prev, curr) => prev + curr.number, 0);
+    tots = newTiles.reduce((prev, curr) => prev + curr.number, 0);
     if (tots < 30) {
       alert("Tiles put down is less than 30");
+      return;
     } else {
       this.currPlayer.initialTurn = false;
     }
@@ -151,6 +155,14 @@ Game.prototype.skipTurn = function() {
   this.changeTurns(true);
 };
 
+// Penalty conditions is when the hand is the same and the board has changed.
+// Arguments: None
+// Return: None
+Game.prototype.penaltyCondition = function() {
+  same_hand = this.savedHand.length == this.currPlayer.hand.length;
+  return this.board.changed && same_hand;
+}
+
 // Penalty is the draw 3 tiles.
 // Arguments: None
 // Return: None
@@ -158,7 +170,6 @@ Game.prototype.penalty = function() {
   for (i = 0; i < Game.PENALTY; i++) {
     this.drawTile(this.currPlayer);
   }
-  this.changeTurns(true);
 };
 
 Game.PENALTY = 3;
@@ -169,6 +180,7 @@ Game.STARTING_NO_OF_TILES = 14;
 // Return: Board object
 var Board = function() {
   this.sets = [];
+  this.changed = false;
 }
 
 // Make a new board given set.  Used to make a deep copy of original board to save state.
@@ -214,6 +226,8 @@ Board.prototype.addTile = function(set, tile, end){
   } else {
     set.tiles.unshift(tile);
   }
+
+  this.changed = true;
   set.numCount[tile.number] += 1;
   set.colorCount[tile.color] += 1;
 }
@@ -229,9 +243,10 @@ Board.prototype.removeTile = function(set, tile){
   var removed = later_set.splice(0, 1)[0];
   // remove the old set and add the new sets to the board
   i_of_set = this.sets.indexOf(set);
-  this.sets.splice(i_of_set, 0);
-  this.sets.push(new gameSet(before_set));
-  this.sets.push(new gameSet(later_set));
+  this.sets.splice(i_of_set, 1);
+  if (before_set.length > 0) this.sets.push(new gameSet(before_set));
+  if (later_set.length > 0)this.sets.push(new gameSet(later_set));
+  this.changed = true;
   return removed;
 }
 
@@ -359,41 +374,74 @@ Game.logTiles = function(hand) {
   return h;
 }
 
-// Test a new game
-g = new Game
-all_tiles = []
-for (i = 0; i < Tile.TILE_COLORS.length; i++) {
-  for (j = 0; j < Tile.MAX_TILE_NO; j++) {
-    all_tiles.push(new Tile(Tile.TILE_COLORS[i], j + 1));
+var createGame = function() {
+  // Test a new game
+  g = new Game
+  all_tiles = []
+  for (i = 0; i < Tile.TILE_COLORS.length; i++) {
+    for (j = 0; j < Tile.MAX_TILE_NO; j++) {
+      all_tiles.push(new Tile(Tile.TILE_COLORS[i], j + 1));
+    }
   }
-}
-// two sets
-g.pool = all_tiles.concat(all_tiles);
+  // two sets
+  g.pool = all_tiles.concat(all_tiles);
 
-// jokers, -1 to indicate joker
-g.pool.push(new Tile("black", 0));
-g.pool.push(new Tile("red", 0));
+  // jokers, -1 to indicate joker
+  g.pool.push(new Tile("black", 0));
+  g.pool.push(new Tile("red", 0));
 
-g.players = [new Player(0), new Player(1)];
-for (i=0; i < g.players.length; i++) {
-  for (j=0; j<14; j++) {
-    g.drawTileNonrandom(g.players[i]);
+  g.players = [new Player(0), new Player(1)];
+  for (i=0; i < g.players.length; i++) {
+    for (j=0; j<14; j++) {
+      g.drawTileNonrandom(g.players[i]);
+    }
   }
+
+  // save the current state before a turn starts
+  g.savedBoard = new Board();
+  g.currPlayer = g.players[0];
+  g.savedHand = g.currPlayer.hand;
+  return g;
 }
 
-// save the current state before a turn starts
-g.savedBoard = new Board();
-g.currPlayer = g.players[0];
-g.savedHand = g.currPlayer.hand;
-t = g.currPlayer.hand[0];
-g.removeFromHand(t);
-g.createSet(t);
-for (i=0; i<10; i++) {
+var startGame = function() {
+  g = createGame();
   t = g.currPlayer.hand[0];
   g.removeFromHand(t);
-  g.board.addTile(g.board.sets[0], t, 1);
+  g.createSet(t);
+  for (i=0; i<10; i++) {
+    t = g.currPlayer.hand[0];
+    g.removeFromHand(t);
+    g.board.addTile(g.board.sets[0], t, 1);
+  }
+
+  g.endTurn();
+  g.skipTurn();
 }
 
-g.endTurn();
-g.skipTurn();
+var tryPenalty = function() {
+  g = createGame();
+
+  // set up board [1, 2, 3, 4] [4, 4, 4]
+  t = g.pool.shift();
+  g.createSet(t);
+  for (i=0; i<3; i++) {
+    t = g.pool.shift();
+    g.board.addTile(g.board.sets[0], t, 1);
+  }
+  all_no = g.pool.filter((tile) => tile.number == 6);
+  t = all_no.shift();
+  g.createSet(t);
+  t = all_no.shift();
+  g.board.addTile(g.board.sets[1], t, 1)
+  t = all_no.shift();
+  g.board.addTile(g.board.sets[1], t, 1)
+  g.pool = $(g.pool).not(g.board.sets[1]).get();
+
+  // game play
+  g.skipTurn();
+  r = g.board.removeTile(g.board.sets[0], g.board.sets[0].tiles[3]);
+  g.board.addTile(g.board.sets[1], r, 1)
+}
+
 
