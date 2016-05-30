@@ -219,16 +219,16 @@ Board.prototype.addTile = function(set, tile, end){
 // Arguments: Tile to remove, 0 for beginning, 1 for end.
 // Return: removed tile.
 Board.prototype.removeTile = function(set, tile){
-  var i = set.indexOf(a);
+  var i = set.tiles.indexOf(tile);
   // split it into 2 sets and return removed tile
   var before_set = set.tiles.slice(0, i)
   var later_set = set.tiles.slice(i)
   var removed = later_set.splice(0, 1)[0];
   // remove the old set and add the new sets to the board
-  i_of_set = this.sets(set);
+  i_of_set = this.sets.indexOf(set);
   this.sets.splice(i_of_set, 0);
-  this.sets.push(before_set);
-  this.sets.push(later_set);
+  this.sets.push(new gameSet(before_set));
+  this.sets.push(new gameSet(later_set));
   return removed;
 }
 
