@@ -56,9 +56,9 @@ var GameView = React.createClass({
           </div> 
           <div className="game">
             <p> Player {this.state.g.currPlayer.id}'s turn </p>
-            <HandView hand={this.state.g.currPlayer.hand} onSelect={this.handleSelect}/>
-            <BoardView onNewSet={this.handleNewSet} onSelect={this.handleSelect}
-                       sets={this.state.g.board.sets} onAddToSet={this.handleAddToSet}/>
+            <HandView hand={this.state.g.currPlayer.hand} handleSelect={this.handleSelect}/>
+            <BoardView handleNewSet={this.handleNewSet} handleSelect={this.handleSelect}
+                       sets={this.state.g.board.sets} handleAddToSet={this.handleAddToSet}/>
           </div>
         </div>)
     }
@@ -69,7 +69,7 @@ var GameView = React.createClass({
               <p className="title">Cattikub</p>
             </div> 
           <div className="game">
-            <StartGameForm onStart={this.handleStart}/>
+            <StartGameForm handleStart={this.handleStart}/>
           </div>
         </div>
       );   
@@ -80,26 +80,26 @@ var GameView = React.createClass({
 var BoardView = React.createClass({
   render: function(){
     if(this.props.sets !== undefined && this.props.sets.length > 0){
-      var onSelect = this.props.onSelect;
-      var onAddToSet = this.props.onAddToSet;
+      var handleSelect = this.props.handleSelect;
+      var handleAddToSet = this.props.handleAddToSet;
       var Sets = this.props.sets.map(function(set){
-        return (<SetView set={set} onSelect={onSelect} onAddToSet={onAddToSet}/>)
+        return (<SetView set={set} handleSelect={handleSelect} handleAddToSet={handleAddToSet}/>)
       });
     }else{
       var Sets = null;
     }
     return (<div id="gameBoard">
               {Sets}
-              <NewSetButton onNewSet={this.props.onNewSet}/>
+              <NewSetButton handleNewSet={this.props.handleNewSet}/>
             </div>)
   }
 });
 
 var HandView = React.createClass({
   render: function() {
-    var onSelect = this.props.onSelect;
+    var handleSelect = this.props.handleSelect;
     var hand = this.props.hand.map(function(tile){
-      return(<TileView tile={tile} onSelect={onSelect}/>);
+      return(<TileView tile={tile} handleSelect={handleSelect}/>);
     });
     return (
       <div className="hand">
@@ -135,7 +135,7 @@ var TileView = React.createClass({
     }
   },
   handleSelect: function(){
-    this.props.onSelect(this.props.tile);
+    this.props.handleSelect(this.props.tile);
   },
   render: function() {
     return (
@@ -150,14 +150,14 @@ var TileView = React.createClass({
 var SetView = React.createClass({
   // render the set of tiles
   render: function() {
-    var onSelect = this.props.onSelect;
+    var handleSelect = this.props.handleSelect;
     var Tiles = this.props.set.tiles.map(function(tile){
-      return(<TileView tile={tile} onSelect={onSelect}/>);
+      return(<TileView tile={tile} handleSelect={handleSelect}/>);
     })
     return (
       <div className="set">
       {Tiles}
-      <AddToSetButton onAddToSet={this.props.onAddToSet} set={this.props.set}/>
+      <AddToSetButton handleAddToSet={this.props.handleAddToSet} set={this.props.set}/>
       </div>
     );
   }
@@ -177,7 +177,7 @@ var StartGameForm = React.createClass({
       this.setState({players: '',
                      message: 'Invalid number of players!'})
     }else{
-      this.props.onStart(this.state.players);
+      this.props.handleStart(this.state.players);
     }
   },
   render: function(){
@@ -216,17 +216,19 @@ var EndGameButton = React.createClass({
 
 var NewSetButton = React.createClass({
   render: function(){
-    return(<div onClick={this.props.onNewSet} className="newSet">+ Add Set </div>)
+    return(<div onClick={this.props.handleNewSet} className="newSet">+ Add Set </div>)
   }
 })
+
 var AddToSetButton = React.createClass({
-  onAddToSet: function(){
-    this.props.onAddToSet(this.props.set);
+  handleAddToSet: function(){
+    this.props.handleAddToSet(this.props.set);
   },
   render: function(){
-    return(<div onClick={this.onAddToSet} className="addSet">+</div>)
+    return(<div onClick={this.handleAddToSet} className="addSet">+</div>)
   }
 })
+
 ReactDOM.render(
   <GameView/>,
   document.getElementById('content')
