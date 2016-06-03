@@ -129,3 +129,8 @@ button{
     cursor: pointer;
     padding: 10px 0 10px 0;
 }
+.startGameForm{
+    width: 85%;
+    margin: 0 auto 0 auto;
+    text-align: center;
+}
