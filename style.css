@@ -1,3 +1,9 @@
+body{
+    margin: 0px;
+    font-family: Roboto;
+    font-weight: 300;
+    background-color: whiteSmoke;
+}
 .tile{
     border-style: solid;
     border-color: PaleGoldenRod;
@@ -10,6 +16,7 @@
     margin: 3px;
     -webkit-user-select: none;
     -moz-user-select: none;
+    display: inline-block;
 }
 .tile:hover{
     opacity: .75;
@@ -22,12 +29,11 @@
     font-family: sans-serif;
     font-weight: bold;
     text-align: center;
-    margin-top: 1%;
     background-color: PaleGoldenRod;
     border-radius: 100%;
     width: 40px;
     height: 40px;
-    margin: 5% auto 0;
+    margin: 7% auto 0;
 }
 .gameName{
     -webkit-user-select:inherit;
@@ -38,18 +44,23 @@
     vertical-align: bottom;
     margin-top: 10px;
 }
+.game{
+    padding: 10px;
+    margin: 0 auto 0 auto;
+    width: 85%;
+}
 .red{
-    color: red;
-    stroke: red;
+    color:  #f44336;
+    stroke:  #f44336;
 }
 .blue{
-    color: blue;
-    stroke: blue;
+    color: #2196f3;
+    stroke: #2196f3;
 
 }
 .orange{
-    color: orange;
-    stroke: orange;
+    color:  #ff9800;
+    stroke:  #ff9800;
 
 }
 .black{
@@ -57,8 +68,10 @@
     stroke: black;
 }
 
-.selected{
-    opacity: .75;
+.hand{
+    margin: 10px 0 10px 0;
+    background-color: white;
+    padding: 10px;
 }
 .hand > .tile{
     display: inline-block;
@@ -66,18 +79,53 @@
 button{
     border: none;
     color: white;
-    background-color: lightSlateGrey;
+    background-color:  #42a5f5;
     padding: 5px 15px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    margin: 5px;
+    margin: 0 5px 0 5px;
 }
 #gameBoard{
-    height: 500px;
-    width: 500px;
-    border-style: solid;
-    border-color: burlyWood;
-    background-color: seaGreen;
-    border-radius: 5%;
+    min-height: 500px;
+    background-color: white;
+    padding: 10px;
+}
+#infoBar{
+    background-color:  #2196f3;
+    font-family: sans-serif;
+    color: white;
+    padding: 15px;
+}
+.infoBarButton{
+    float: right;
+    vertical-align: top;
+}
+.inputButton{
+    height: 26px;
+}
+.inputButton > *{
+    height: 100%;
+    box-sizing: border-box;
+}
+.title{
+    font-size: 24px;
+    margin: 0px;
+    display: inline;
+}
+.joker{
+    width: 100%;
+    stroke-width: 15px;
+}
+.set{
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.addSet{
+    padding: 0px 5px 0px 5px;
+}
+.newSet{
+    cursor: pointer;
+    padding: 10px 0 10px 0;
 }

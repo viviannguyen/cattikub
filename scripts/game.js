@@ -54,7 +54,7 @@ Game.prototype.initializeGame = function(numPlayers) {
 // Return: True.
 Game.prototype.createSet = function(tile) {
   new_set = new gameSet([tile]);
-  g.board.sets.push(new_set);
+  this.board.sets.push(new_set);
   return true;
 };
 
@@ -65,6 +65,7 @@ Game.prototype.resetBoard = function() {
   this.board = this.savedBoard;
   this.savedBoard = Board.copy(this.board.sets);
   this.currPlayer.hand = this.savedHand;
+  this.savedHand = this.currPlayer.hand.slice(0);
   return true;
 };
 
@@ -72,7 +73,7 @@ Game.prototype.resetBoard = function() {
 // Arguments: None
 // Return: true if changed turns, false if unvalidated
 Game.prototype.endTurn = function() {
-  isValid = g.board.checkValidity();
+  isValid = this.board.checkValidity();
   if (isValid) {
     this.changeTurns(false);
     return true;
@@ -157,6 +158,7 @@ Game.prototype.drawTileNonrandom = function(player) {
 // (2) Switch turns.
 // Arguments: None
 // Return: None
+//FIXME: Doesn't properly check validity of board.
 Game.prototype.skipTurn = function() {
   this.drawTile(this.currPlayer);
   this.changeTurns(true);
