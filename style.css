@@ -56,3 +56,28 @@
     color: black;
     stroke: black;
 }
+
+.selected{
+    opacity: .75;
+}
+.hand > .tile{
+    display: inline-block;
+}
+button{
+    border: none;
+    color: white;
+    background-color: lightSlateGrey;
+    padding: 5px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 5px;
+}
+#gameBoard{
+    height: 500px;
+    width: 500px;
+    border-style: solid;
+    border-color: burlyWood;
+    background-color: seaGreen;
+    border-radius: 5%;
+}

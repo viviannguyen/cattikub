@@ -13,7 +13,7 @@ var Game = function() {
 // (3) Set the current player (currPlayer), save the state (savedBoard, savedHand)
 // Arguments: None.
 // Return: removed tile.
-Game.prototype.initializeGame = function() {
+Game.prototype.initializeGame = function(numPlayers) {
   all_tiles = []
   for (i = 0; i < Tile.MAX_TILE_NO; i++) {
     for (j = 0; j < Tile.TILE_COLORS.length; j++) {
@@ -29,7 +29,14 @@ Game.prototype.initializeGame = function() {
   this.pool.push(new Tile("red", 0));
 
   // FIXME: this is wrong...
-  this.players = [new Player(0), new Player(1)];
+  if (numPlayers === undefined){
+    this.players = [new Player(0), new Player(1)];
+  } else{
+    this.players = [];
+    for (var i = 0; i < numPlayers; i++){
+      this.players.push(new Player(i));
+    }    
+  }
   for (i = 0; i < this.players.length; i++) {
     p = this.players[i];
     for (j = 0; j < Game.STARTING_NO_OF_TILES; j++) {
